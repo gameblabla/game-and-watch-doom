@@ -664,8 +664,8 @@ boolean PTR_SlideTraverse (intercept_t* in)
 {
     line_t*	li;
 	
-    if (!in->isaline)
-	I_Error ("PTR_SlideTraverse: not a line?");
+  /*  if (!in->isaline)
+	I_Error ("PTR_SlideTraverse: not a line?");*/
 		
     li = in->d.line;
     
@@ -1390,7 +1390,7 @@ P_ChangeSector
 
 static void SpechitOverrun(line_t *ld)
 {
-    static unsigned int baseaddr = 0;
+   /* static unsigned int baseaddr = 0;
     unsigned int addr;
    
     if (baseaddr == 0)
@@ -1443,6 +1443,6 @@ static void SpechitOverrun(line_t *ld)
                             "an overrun where numspechit=%i\n",
                             numspechit);
             break;
-    }
+    }*/
 }
 

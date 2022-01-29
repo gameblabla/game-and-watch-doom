@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "main.h"
 // HAL_GPIO_ReadPin
 // #define BTN_PAUSE_Pin GPIO_PIN_13
@@ -30,25 +31,23 @@
 #define B_START (1 << 8)
 
 short buttons_get() {
-	Uint8 *keystate = SDL_GetKeyState(NULL);
+	uint32_t padtype, paddata;
+	padtype = eris_pad_type(0);
+	/* Do it twice due to liberis bug */
+	paddata = eris_pad_read(0);
+	paddata = eris_pad_read(0);
 	
-	
-	bool left = keystate[SDLK_LEFT] ? 1 : 0;
-    bool right = keystate[SDLK_RIGHT] ? 1 : 0;
-    bool up = keystate[SDLK_UP] ? 1 : 0;
-    bool down = keystate[SDLK_DOWN] ? 1 : 0;
-    bool a = keystate[SDLK_LCTRL] ? 1 : 0;
-    bool b = keystate[SDLK_LALT] ? 1 : 0;
-    bool c = keystate[SDLK_LSHIFT] ? 1 : 0;
-    bool d = keystate[SDLK_SPACE] ? 1 : 0;
-    bool start = keystate[SDLK_RETURN] ? 1 : 0;
-    
-	SDL_Event event;
-	SDL_PollEvent(&event);
+	bool left = (paddata & (1 << 11)) ? 1 : 0;
+    bool right = (paddata & (1 << 9)) ? 1 : 0;
+    bool up = (paddata & (1 << 8)) ? 1 : 0;
+    bool down = (paddata & (1 << 10)) ? 1 : 0;
+    bool a = (paddata & (1 << 0)) ? 1 : 0;
+    bool b = (paddata & (1 << 1)) ? 1 : 0;
+    bool c = (paddata & (1 << 2)) ? 1 : 0;
+    bool d = (paddata & (1 << 3)) ? 1 : 0;
+    bool start = (paddata & (1 << 7)) ? 1 : 0;
 
     return (
         left | (up << 1) | (right << 2) | (down << 3) | (a << 4) | (b << 5) | (c << 6) | (d << 7) | (start << 8)
     );
-
-
 }

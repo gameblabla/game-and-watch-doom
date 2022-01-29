@@ -49,12 +49,6 @@ boolean savegame_error;
 char *P_TempSaveGameFile(void)
 {
     static char *filename = NULL;
-
-    if (filename == NULL)
-    {
-        filename = M_StringJoin(savegamedir, "temp.dsg", NULL);
-    }
-
     return filename;
 }
 
@@ -63,18 +57,6 @@ char *P_TempSaveGameFile(void)
 char *P_SaveGameFile(int slot)
 {
     static char *filename = NULL;
-    static size_t filename_size = 0;
-    char basename[32];
-
-    if (filename == NULL)
-    {
-        filename_size = strlen(savegamedir) + 32;
-        filename = malloc(filename_size);
-    }
-
-    DEH_snprintf(basename, 32, SAVEGAMENAME "%d.dsg", slot);
-    M_snprintf(filename, filename_size, "%s%s", savegamedir, basename);
-
     return filename;
 }
 
@@ -82,36 +64,14 @@ char *P_SaveGameFile(int slot)
 
 static byte saveg_read8(void)
 {
-    byte result;
+    byte result = 0;
     unsigned long count;
-
-    if (f_readn (&save_stream, &result, 1, &count) != FR_OK)
-    {
-        if (!savegame_error)
-        {
-            fprintf(stderr, "saveg_read8: Unexpected end of file while "
-                            "reading save game\n");
-
-            savegame_error = true;
-        }
-    }
 
     return result;
 }
 
 static void saveg_write8(byte value)
 {
-	unsigned long count;
-
-	if (f_writen (&save_stream, &value, 1, &count) != FR_OK)
-    {
-        if (!savegame_error)
-        {
-            fprintf(stderr, "saveg_write8: Error while writing save game\n");
-
-            savegame_error = true;
-        }
-    }
 }
 
 static short saveg_read16(void)
@@ -1360,7 +1320,7 @@ void P_WriteSaveGameHeader(char *description)
         saveg_write8(0);
 
     memset(name, 0, sizeof(name));
-    M_snprintf(name, sizeof(name), "version %i", G_VanillaVersionCode());
+    //M_snprintf(name, sizeof(name), "version %i", G_VanillaVersionCode());
 
     for (i=0; i<VERSIONSIZE; ++i)
         saveg_write8(name[i]);
@@ -1397,7 +1357,7 @@ boolean P_ReadSaveGameHeader(void)
         read_vcheck[i] = saveg_read8();
 
     memset(vcheck, 0, sizeof(vcheck));
-    M_snprintf(vcheck, sizeof(vcheck), "version %i", G_VanillaVersionCode());
+    //M_snprintf(vcheck, sizeof(vcheck), "version %i", G_VanillaVersionCode());
     if (strcmp(read_vcheck, vcheck) != 0)
 	return false;				// bad version 
 
@@ -1436,7 +1396,6 @@ boolean P_ReadSaveGameEOF(void)
 
 void P_WriteSaveGameEOF(void)
 {
-    saveg_write8(SAVEGAME_EOF);
 }
 
 //
@@ -1444,17 +1403,7 @@ void P_WriteSaveGameEOF(void)
 //
 void P_ArchivePlayers (void)
 {
-    int		i;
-		
-    for (i=0 ; i<MAXPLAYERS ; i++)
-    {
-    	if (!playeringame[i])
-    		continue;
-	
-    	saveg_write_pad();
 
-        saveg_write_player_t(&players[i]);
-    }
 }
 
 
@@ -1464,22 +1413,7 @@ void P_ArchivePlayers (void)
 //
 void P_UnArchivePlayers (void)
 {
-    int		i;
-	
-    for (i=0 ; i<MAXPLAYERS ; i++)
-    {
-		if (!playeringame[i])
-			continue;
 
-		saveg_read_pad();
-	
-		saveg_read_player_t(&players[i]);
-
-		// will be set when unarc thinker
-		players[i].mo = NULL;
-		players[i].message = NULL;
-		players[i].attacker = NULL;
-    }
 }
 
 
@@ -1488,45 +1422,6 @@ void P_UnArchivePlayers (void)
 //
 void P_ArchiveWorld (void)
 {
-    int			i;
-    int			j;
-    sector_t*		sec;
-    line_t*		li;
-    side_t*		si;
-    
-    // do sectors
-    for (i=0, sec = sectors ; i<numsectors ; i++,sec++)
-    {
-		saveg_write16(sec->floorheight >> FRACBITS);
-		saveg_write16(sec->ceilingheight >> FRACBITS);
-		saveg_write16(sec->floorpic);
-		saveg_write16(sec->ceilingpic);
-		saveg_write16(sec->lightlevel);
-		saveg_write16(sec->special);		// needed?
-		saveg_write16(sec->tag);		// needed?
-    }
-
-    
-    // do lines
-    for (i=0, li = lines ; i<numlines ; i++,li++)
-    {
-		saveg_write16(li->flags);
-		saveg_write16(li->special);
-		saveg_write16(li->tag);
-		for (j=0 ; j<2 ; j++)
-		{
-			if (li->sidenum[j] == -1)
-			continue;
-
-			si = &sides[li->sidenum[j]];
-
-			saveg_write16(si->textureoffset >> FRACBITS);
-			saveg_write16(si->rowoffset >> FRACBITS);
-			saveg_write16(si->toptexture);
-			saveg_write16(si->bottomtexture);
-			saveg_write16(si->midtexture);
-		}
-    }
 }
 
 
@@ -1536,44 +1431,6 @@ void P_ArchiveWorld (void)
 //
 void P_UnArchiveWorld (void)
 {
-    int			i;
-    int			j;
-    sector_t*		sec;
-    line_t*		li;
-    side_t*		si;
-    
-    // do sectors
-    for (i=0, sec = sectors ; i<numsectors ; i++,sec++)
-    {
-		sec->floorheight = saveg_read16() << FRACBITS;
-		sec->ceilingheight = saveg_read16() << FRACBITS;
-		sec->floorpic = saveg_read16();
-		sec->ceilingpic = saveg_read16();
-		sec->lightlevel = saveg_read16();
-		sec->special = saveg_read16();		// needed?
-		sec->tag = saveg_read16();		// needed?
-		sec->specialdata = 0;
-		sec->soundtarget = 0;
-    }
-    
-    // do lines
-    for (i=0, li = lines ; i<numlines ; i++,li++)
-    {
-		li->flags = saveg_read16();
-		li->special = saveg_read16();
-		li->tag = saveg_read16();
-		for (j=0 ; j<2 ; j++)
-		{
-			if (li->sidenum[j] == -1)
-			continue;
-			si = &sides[li->sidenum[j]];
-			si->textureoffset = saveg_read16() << FRACBITS;
-			si->rowoffset = saveg_read16() << FRACBITS;
-			si->toptexture = saveg_read16();
-			si->bottomtexture = saveg_read16();
-			si->midtexture = saveg_read16();
-		}
-    }
 }
 
 

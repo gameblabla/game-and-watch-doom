@@ -24,8 +24,8 @@
 
 // Screen width and height.
 
-#define SCREENWIDTH  320
-#define SCREENHEIGHT 200
+#define SCREENWIDTH  256
+#define SCREENHEIGHT 240
 
 // Screen width used for "squash" scale functions
 
@@ -144,8 +144,7 @@ extern float mouse_acceleration;
 extern int mouse_threshold;
 extern int vanilla_keyboard_mapping;
 extern boolean screensaver_mode;
-extern int usegamma;
-extern byte I_VideoBuffer[SCREENWIDTH * SCREENHEIGHT];
+extern byte* I_VideoBuffer;
 
 extern int screen_width;
 extern int screen_height;

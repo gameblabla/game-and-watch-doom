@@ -1263,67 +1263,26 @@ int EV_DoDonut(line_t*	line)
     int			rtn;
     int			i;
     floormove_t*	floor;
-    fixed_t s3_floorheight;
-    short s3_floorpic;
-
+	
     secnum = -1;
     rtn = 0;
     while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
     {
 	s1 = &sectors[secnum];
-
+		
 	// ALREADY MOVING?  IF SO, KEEP GOING...
 	if (s1->specialdata)
 	    continue;
-
+			
 	rtn = 1;
 	s2 = getNextSector(s1->lines[0],s1);
-
-        // Vanilla Doom does not check if the linedef is one sided.  The
-        // game does not crash, but reads invalid memory and causes the
-        // sector floor to move "down" to some unknown height.
-        // DOSbox prints a warning about an invalid memory access.
-        //
-        // I'm not sure exactly what invalid memory is being read.  This
-        // isn't something that should be done, anyway.
-        // Just print a warning and return.
-
-        if (s2 == NULL)
-        {
-            fprintf(stderr,
-                    "EV_DoDonut: linedef had no second sidedef! "
-                    "Unexpected behavior may occur in Vanilla Doom. \n");
-	    break;
-        }
-
-	for (i = 0; i < s2->linecount; i++)
+	for (i = 0;i < s2->linecount;i++)
 	{
-	    s3 = s2->lines[i]->backsector;
-
-	    if (s3 == s1)
+	    if ((!s2->lines[i]->flags & ML_TWOSIDED) ||
+		(s2->lines[i]->backsector == s1))
 		continue;
-
-            if (s3 == NULL)
-            {
-                // e6y
-                // s3 is NULL, so
-                // s3->floorheight is an int at 0000:0000
-                // s3->floorpic is a short at 0000:0008
-                // Trying to emulate
-
-                fprintf(stderr,
-                        "EV_DoDonut: WARNING: emulating buffer overrun due to "
-                        "NULL back sector. "
-                        "Unexpected behavior may occur in Vanilla Doom.\n");
-
-                DonutOverrun(&s3_floorheight, &s3_floorpic, line, s1);
-            }
-            else
-            {
-                s3_floorheight = s3->floorheight;
-                s3_floorpic = s3->floorpic;
-            }
-
+	    s3 = s2->lines[i]->backsector;
+	    
 	    //	Spawn rising slime
 	    floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
 	    P_AddThinker (&floor->thinker);
@@ -1334,9 +1293,9 @@ int EV_DoDonut(line_t*	line)
 	    floor->direction = 1;
 	    floor->sector = s2;
 	    floor->speed = FLOORSPEED / 2;
-	    floor->texture = s3_floorpic;
+	    floor->texture = s3->floorpic;
 	    floor->newspecial = 0;
-	    floor->floordestheight = s3_floorheight;
+	    floor->floordestheight = s3->floorheight;
 	    
 	    //	Spawn lowering donut-hole
 	    floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
@@ -1348,7 +1307,7 @@ int EV_DoDonut(line_t*	line)
 	    floor->direction = -1;
 	    floor->sector = s1;
 	    floor->speed = FLOORSPEED / 2;
-	    floor->floordestheight = s3_floorheight;
+	    floor->floordestheight = s3->floorheight;
 	    break;
 	}
     }

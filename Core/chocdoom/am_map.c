@@ -680,13 +680,6 @@ AM_Responder
             else
                 plr->message = DEH_String(AMSTR_GRIDOFF);
         }
-        else if (key == key_map_mark)
-        {
-            M_snprintf(buffer, sizeof(buffer), "%s %d",
-                       DEH_String(AMSTR_MARKEDSPOT), markpointnum);
-            plr->message = buffer;
-            AM_addMark();
-        }
         else if (key == key_map_clearmark)
         {
             AM_clearMarks();
@@ -998,14 +991,14 @@ AM_drawFline
     static int fuck = 0;
 
     // For debugging only
-    if (      fl->a.x < 0 || fl->a.x >= f_w
+   /* if (      fl->a.x < 0 || fl->a.x >= f_w
 	   || fl->a.y < 0 || fl->a.y >= f_h
 	   || fl->b.x < 0 || fl->b.x >= f_w
 	   || fl->b.y < 0 || fl->b.y >= f_h)
     {
         DEH_fprintf(stderr, "fuck %d \r", fuck++);
 	return;
-    }
+    }*/
 
 #define PUTDOT(xx,yy,cc) fb[(yy)*f_w+(xx)]=(cc)
 

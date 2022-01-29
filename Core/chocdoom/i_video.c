@@ -25,6 +25,10 @@
 static const char
 rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 
+#ifndef PCFX
+#include <SDL/SDL.h>
+#endif
+
 #include "config.h"
 #include "v_video.h"
 #include "m_argv.h"
@@ -47,7 +51,7 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 
 // The screen buffer; this is modified to draw things to the screen
 
-byte I_VideoBuffer[SCREENWIDTH * SCREENHEIGHT] __attribute__((section (".thirdram")));
+byte *I_VideoBuffer;
 
 // If true, game is running as a screensaver
 
@@ -70,10 +74,6 @@ boolean screenvisible;
 float mouse_acceleration = 2.0;
 int mouse_threshold = 10;
 
-// Gamma correction level to use
-
-int usegamma = 0;
-
 int usemouse = 0;
 
 // If true, keyboard mapping is ignored, like in Vanilla Doom.
@@ -90,9 +90,12 @@ typedef struct
 	byte b;
 } col_t;
 
-// Palette converted to RGB565
+col_t palette[256];
 
+// Palette converted to RGB565
+#ifdef RGB565_BUF
 static uint16_t rgb565_palette[256];
+#endif
 
 // Last touch state
 
@@ -101,7 +104,7 @@ static uint16_t rgb565_palette[256];
 // Last button state
 
 static bool last_button_state;
-static uint32_t previous_buttons;
+static short previous_buttons;
 
 // run state
 
@@ -123,7 +126,7 @@ void I_InitGraphics (void)
 	// lcd_refresh ();
 
 	// I_VideoBuffer = (byte*)Z_Mall32oc (SCREENWIDTH * SCREENHEIGHT, PU_STATIC, NULL);
-
+	I_VideoBuffer = SCREENBUFFER;
 	screenvisible = true;
 }
 
@@ -143,7 +146,7 @@ void I_StartFrame (void)
 
 
 
-static uint32_t pressed_buttons;
+static short pressed_buttons;
 
 
 enum ButtonState {
@@ -151,7 +154,7 @@ enum ButtonState {
 	BTN_Up,
 	BTN_Down
 };
-enum ButtonState check_button(event_t *e, uint32_t old_state, uint32_t new_state, int doom_button, uint32_t our_button) {
+enum ButtonState check_button(event_t *e, short old_state, short new_state, short doom_button, short our_button) {
 	if((our_button & old_state) && !(our_button & new_state)) {
 		event_t event;
 		event.type = ev_keyup;
@@ -192,7 +195,8 @@ void I_GetEvent (void)
 		D_PostEvent (&event);
 	}
 
-	uint32_t buttons = buttons_get();
+	/* gameblabla */
+	short buttons = buttons_get();
 	if(buttons != previous_buttons) {
 		// if(buttons < previous_buttons) {
 		// 	// key released
@@ -209,6 +213,12 @@ void I_GetEvent (void)
 		check_button(&event, previous_buttons, buttons, KEY_DOWNARROW, B_Down);
 		check_button(&event, previous_buttons, buttons, KEY_ENTER, B_B);
 		check_button(&event, previous_buttons, buttons, KEY_FIRE, B_A);
+		
+		check_button(&event, previous_buttons, buttons, KEY_USE, B_C);
+		
+		
+		check_button(&event, previous_buttons, buttons, KEY_RALT, B_D);
+		check_button(&event, previous_buttons, buttons, KEY_ESCAPE, B_START);
 
 		// if(buttons) {
 		// 	event.type = ev_keydown;
@@ -392,20 +402,26 @@ void I_UpdateNoBlit (void)
 
 void I_FinishUpdate (void)
 {
+	#ifndef PCFX
+	extern SDL_Surface* screen;
+	#endif
 	int x, y;
 	byte index;
 
 	// lcd_vsync = false;
 
+	#ifdef RGB565_BUF
 	for (y = 0; y < SCREENHEIGHT; y++)
 	{
 		for (x = 0; x < SCREENWIDTH; x++)
 		{
-			index = I_VideoBuffer[y * SCREENWIDTH + x];
-			framebuffer[y * GFX_MAX_WIDTH + x] = rgb565_palette[index];
+			index = framebuffer[y * SCREENWIDTH + x];
+			I_VideoBuffer[y * GFX_MAX_WIDTH + x] = rgb565_palette[index];
 			// framebuffer[x * GFX_MAX_WIDTH + (GFX_MAX_WIDTH - y - 1)] = 
 		}
 	}
+	#endif
+	lcd_flip();
 
 	// lcd_refresh ();
 
@@ -423,8 +439,9 @@ void I_ReadScreen (byte* scr)
 //
 // I_SetPalette
 //
-void I_SetPalette (byte* palette)
+void I_SetPalette (byte* doompalette)
 {
+	/*#ifdef RGB565_BUF
 	int i;
 	col_t* c;
 
@@ -432,18 +449,32 @@ void I_SetPalette (byte* palette)
 	{
 		c = (col_t*)palette;
 
-		rgb565_palette[i] = GFX_RGB565(gammatable[usegamma][c->r],
-									   gammatable[usegamma][c->g],
-									   gammatable[usegamma][c->b]);
+		rgb565_palette[i] = (gammatable[c->r],
+									   gammatable[c->g],
+									   gammatable[c->b]);
 
-		palette += 3;
+		doompalette += 3;
 	}
+	#else
+    uint16_t i;
+
+    for (i=0; i<256; ++i)
+    {
+        // Zero out the bottom two bits of each channel - the PC VGA
+        // controller only supports 6 bits of accuracy.
+
+        palette[i].r = gammatable[*doompalette++] & ~3;
+        palette[i].g = gammatable[*doompalette++] & ~3;
+        palette[i].b = gammatable[*doompalette++] & ~3;
+    }
+	#endif*/
 }
 
 // Given an RGB value, find the closest matching palette index.
 
 int I_GetPaletteIndex (int r, int g, int b)
 {
+	#ifdef RGB565_BUF
     int best, best_diff, diff;
     int i;
     col_t color;
@@ -474,6 +505,32 @@ int I_GetPaletteIndex (int r, int g, int b)
     }
 
     return best;
+    #else
+    int best, best_diff, diff;
+    int i;
+
+    best = 0; best_diff = INT_MAX;
+
+    for (i = 0; i < 256; ++i)
+    {
+        diff = (r - palette[i].r) * (r - palette[i].r)
+             + (g - palette[i].g) * (g - palette[i].g)
+             + (b - palette[i].b) * (b - palette[i].b);
+
+        if (diff < best_diff)
+        {
+            best = i;
+            best_diff = diff;
+        }
+
+        if (diff == 0)
+        {
+            break;
+        }
+    }
+
+    return best;
+    #endif
 }
 
 void I_BeginRead (void)

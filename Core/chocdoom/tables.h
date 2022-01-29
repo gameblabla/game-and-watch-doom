@@ -56,7 +56,11 @@ extern const fixed_t *finecosine;
 extern const fixed_t finetangent[FINEANGLES/2];
 
 // Gamma correction tables.
+#if GAMMATABLES
 extern const byte gammatable[5][256];
+#else
+extern const byte gammatable[256];
+#endif
 
 // Binary Angle Measument, BAM.
 

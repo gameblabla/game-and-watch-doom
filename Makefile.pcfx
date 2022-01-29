@@ -1,0 +1,15 @@
+SRCDIR		= ./Core/chocdoom ./Core/Src_pcfx
+VPATH		= $(SRCDIR)
+SRC_C		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
+SRC_S		= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.s))
+OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
+OBJ_S		= $(notdir $(patsubst %.s, %.o, $(SRC_S)))
+CD_OBJECTS		= $(OBJ_C) $(OBJ_S)
+OBJECTS        = $(CD_OBJECTS)
+
+ELF_TARGET     = scsi_dma.elf
+BIN_TARGET     = scsi_dma.bin
+ADD_FILES      = dumb.bin
+CDOUT          = scsi_dma_cd
+
+include example.mk

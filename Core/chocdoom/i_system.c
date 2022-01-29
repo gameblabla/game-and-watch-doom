@@ -69,7 +69,7 @@ struct atexit_listentry_s
 };
 
 static atexit_listentry_t *exit_funcs = NULL;
-
+/*
 void I_AtExit(atexit_func_t func, boolean run_on_error)
 {
     // atexit_listentry_t *entry;
@@ -80,7 +80,7 @@ void I_AtExit(atexit_func_t func, boolean run_on_error)
     // entry->run_on_error = run_on_error;
     // entry->next = exit_funcs;
     // exit_funcs = entry;
-}
+}1*/
 
 // Tactile feedback function, probably used for the Logitech Cyberman
 
@@ -157,38 +157,38 @@ byte *I_ZoneBase (int *size)
 
     zonemem = AutoAllocMemory(size, default_ram, min_ram);
 
-    printf("zone memory: %p, %x allocated for zone\n", 
-           zonemem, *size);
+   /* printf("zone memory: %p, %x allocated for zone\n", 
+           zonemem, *size);*/
 
     return zonemem;
 }
 
 void I_PrintBanner(char *msg)
 {
-    int i;
+   /* int i;
     int spaces = 35 - (strlen(msg) / 2);
 
     for (i=0; i<spaces; ++i)
         putchar(' ');
 
-    puts(msg);
+    puts(msg);*/
 }
 
 void I_PrintDivider(void)
 {
-    int i;
+    /*int i;
 
     for (i=0; i<75; ++i)
     {
         putchar('=');
     }
 
-    putchar('\n');
+    putchar('\n');*/
 }
 
 void I_PrintStartupBanner(char *gamedescription)
 {
-    I_PrintDivider();
+    /*I_PrintDivider();
     I_PrintBanner(gamedescription);
     I_PrintDivider();
     
@@ -198,7 +198,7 @@ void I_PrintStartupBanner(char *gamedescription)
     " FOR A PARTICULAR PURPOSE. You are welcome to change and distribute\n"
     " copies under certain conditions. See the source for more information.\n");
 
-    I_PrintDivider();
+    I_PrintDivider();*/
 }
 
 // 
@@ -359,7 +359,7 @@ static boolean already_quitting = false;
 
 void I_Error (char *error, ...)
 {
-    char msgbuf[512];
+   /* char msgbuf[512];
     va_list argptr;
     atexit_listentry_t *entry;
     boolean exit_gui_popup;
@@ -464,7 +464,7 @@ void I_Error (char *error, ...)
     while (true)
     {
     }
-#endif
+#endif*/
 }
 
 //

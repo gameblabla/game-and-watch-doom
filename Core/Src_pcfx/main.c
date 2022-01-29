@@ -16,6 +16,7 @@
   *
   ******************************************************************************
   */
+#include <stdint.h>
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -26,10 +27,7 @@
 #include "lcd.h"
 /* USER CODE END Includes */
 
-extern SDL_Surface* screen;
-
 extern int mytoupper(int c);
-
 void strupr (char* s)
 {
     while (*s) { *s = mytoupper(*s); s++; }
@@ -38,9 +36,6 @@ void strupr (char* s)
   * @brief  The application entry point.
   * @retval int
   */
- 
-extern void D_DoomMain();
-  
 int main(void)
 {
 	lcd_init();
@@ -74,3 +69,44 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+/* Required stubs for it to compile (due to issues with libc on PCFX for whatever reason) */
+
+// Stub for `kill`
+int kill(int pid, int sig) {
+    return -1;
+}
+
+// Stub for `getpid`
+int getpid(void) {
+    // Return a dummy process ID
+    return 1;
+}
+
+// Stub for `write`
+int write(int fd, const void *buf, int count) {
+    // Simulate successful write (no actual output)
+    return 0;
+}
+
+// Stub for `close`
+int close(int fd) {
+    // Simulate successful close
+    return 0;
+}
+
+// Stub for `lseek`
+int lseek(int fd, int offset, int whence) {
+    return -1;
+}
+
+// Stub for `read`
+int read(int fd, void *buf, int count) {
+    // Simulate an end-of-file or error
+    return 0;
+}
+
+// Stub for `fstat`
+int fstat(int fd, struct stat *st) {
+    return -1;
+}

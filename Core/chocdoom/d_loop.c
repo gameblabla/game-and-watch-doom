@@ -459,7 +459,7 @@ boolean D_InitNetGame(net_connect_data_t *connect_data)
 
     // Call D_QuitNetGame on exit:
 
-    I_AtExit(D_QuitNetGame, true);
+    //I_AtExit(D_QuitNetGame, true);
 
     player_class = connect_data->player_class;
 

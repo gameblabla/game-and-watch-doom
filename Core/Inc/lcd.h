@@ -1,13 +1,29 @@
 #ifndef _LCD_H_
 #define _LCD_H_
 
-#include "stm32h7xx_hal.h"
 #include <stdint.h>
+#ifndef PCFX
+#include <SDL/SDL.h>
+extern SDL_Surface* screen;
+#endif
 
-extern uint16_t framebuffer[320 * 240];
 
-#define GFX_MAX_WIDTH 320
 
-void lcd_init(SPI_HandleTypeDef *spi, LTDC_HandleTypeDef *ltdc);
+#ifdef RGB565_BUF
+extern uint8_t framebuffer[256*240];
+#endif
+
+#ifdef PCFX
+extern uint8_t framebuffer[256*240];
+#define SCREENBUFFER framebuffer
+#define GFX_MAX_WIDTH 256
+#else
+#define GFX_MAX_WIDTH 256
+#define SCREENBUFFER screen->pixels
+#endif
+
+void lcd_init();
+void lcd_exit();
+void lcd_flip();
 
 #endif

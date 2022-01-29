@@ -905,7 +905,7 @@ void G_Ticker (void)
                 turbodetected[i] = true;
             }
 
-            if ((gametic & 31) == 0 
+           /* if ((gametic & 31) == 0 
              && ((gametic >> 5) % MAXPLAYERS) == i
              && turbodetected[i])
             {
@@ -915,7 +915,7 @@ void G_Ticker (void)
                            "%s is turbo!", player_names[i]);
                 players[consoleplayer].message = turbomessage;
                 turbodetected[i] = false;
-            }
+            }*/
 
 	    if (netgame && !netdemo && !(gametic%ticdup) ) 
 	    { 
@@ -1942,37 +1942,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
  
  
  
-//
-// G_RecordDemo
-//
-void G_RecordDemo (char *name)
-{
-    size_t demoname_size;
-    int i;
-    int maxsize;
 
-    usergame = false;
-    demoname_size = strlen(name) + 5;
-    demoname = Z_Malloc(demoname_size, PU_STATIC, NULL);
-    M_snprintf(demoname, demoname_size, "%s.lmp", name);
-    maxsize = 0x20000;
-
-    //!
-    // @arg <size>
-    // @category demo
-    // @vanilla
-    //
-    // Specify the demo buffer size (KiB)
-    //
-
-    i = M_CheckParmWithArgs("-maxdemo", 1);
-    if (i)
-	maxsize = atoi(myargv[i+1])*1024;
-    demobuffer = Z_Malloc (maxsize,PU_STATIC,NULL); 
-    demoend = demobuffer + maxsize;
-	
-    demorecording = true; 
-} 
 
 // Get the demo version code appropriate for the version set in gameversion.
 int G_VanillaVersionCode(void)
@@ -1993,48 +1963,6 @@ int G_VanillaVersionCode(void)
     }
 }
 
-void G_BeginRecording (void) 
-{ 
-    int             i; 
-
-    //!
-    // @category demo
-    //
-    // Record a high resolution "Doom 1.91" demo.
-    //
-
-    longtics = M_CheckParm("-longtics") != 0;
-
-    // If not recording a longtics demo, record in low res
-
-    lowres_turn = !longtics;
-    
-    demo_p = demobuffer;
-	
-    // Save the right version code for this demo
- 
-    if (longtics)
-    {
-        *demo_p++ = DOOM_191_VERSION;
-    }
-    else
-    {
-        *demo_p++ = G_VanillaVersionCode();
-    }
-
-    *demo_p++ = gameskill; 
-    *demo_p++ = gameepisode; 
-    *demo_p++ = gamemap; 
-    *demo_p++ = deathmatch; 
-    *demo_p++ = respawnparm;
-    *demo_p++ = fastparm;
-    *demo_p++ = nomonsters;
-    *demo_p++ = consoleplayer;
-	 
-    for (i=0 ; i<MAXPLAYERS ; i++) 
-	*demo_p++ = playeringame[i]; 		 
-} 
- 
 
 //
 // G_PlayDemo 
@@ -2075,7 +2003,7 @@ static char *DemoVersionDescription(int version)
     // Unknown version.  Perhaps this is a pre-v1.4 IWAD?  If the version
     // byte is in the range 0-4 then it can be a v1.0-v1.2 demo.
 
-    if (version >= 0 && version <= 4)
+   /* if (version >= 0 && version <= 4)
     {
         return "v1.0/v1.1/v1.2";
     }
@@ -2084,7 +2012,8 @@ static char *DemoVersionDescription(int version)
         M_snprintf(resultbuf, sizeof(resultbuf),
                    "%i.%i (unknown)", version / 100, version % 100);
         return resultbuf;
-    }
+    }*/
+    return "1.9";
 }
 
 void G_DoPlayDemo (void) 
@@ -2185,7 +2114,7 @@ boolean G_CheckDemoStatus (void)
 { 
     int             endtime; 
 	 
-    if (timingdemo) 
+   /*if (timingdemo) 
     { 
         float fps;
         int realtics;
@@ -2200,7 +2129,7 @@ boolean G_CheckDemoStatus (void)
 
 	I_Error ("timed %i gametics in %i realtics (%f fps)",
                  gametic, realtics, fps);
-    } 
+    } */
 	 
     if (demoplayback) 
     { 
@@ -2223,14 +2152,14 @@ boolean G_CheckDemoStatus (void)
 	return true; 
     } 
  
-    if (demorecording) 
+   /* if (demorecording) 
     { 
 	*demo_p++ = DEMOMARKER; 
 	M_WriteFile (demoname, demobuffer, demo_p - demobuffer); 
 	Z_Free (demobuffer); 
 	demorecording = false; 
 	I_Error ("Demo %s recorded",demoname); 
-    } 
+    } */
 	 
     return false; 
 } 

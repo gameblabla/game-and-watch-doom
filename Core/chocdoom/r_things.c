@@ -38,7 +38,8 @@
 
 
 #define MINZ				(FRACUNIT*4)
-#define BASEYCENTER			100
+// 100 for 320x200, gameblabla
+#define BASEYCENTER			80
 
 //void R_DrawColumn (void);
 //void R_DrawFuzzColumn (void);

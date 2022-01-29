@@ -416,7 +416,7 @@ void ST_Stop(void);
 void ST_refreshBackground(void)
 {
 
-    if (st_statusbaron)
+   /* if (st_statusbaron)
     {
         V_UseBuffer(st_backing_screen);
 
@@ -429,7 +429,7 @@ void ST_refreshBackground(void)
 
 	V_CopyRect(ST_X, 0, st_backing_screen, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y);
     }
-
+*/
 }
 
 
@@ -588,7 +588,7 @@ ST_Responder (event_t* ev)
 	plyr->message = DEH_String(STSTR_CHOPPERS);
       }
       // 'mypos' for player position
-      else if (cht_CheckCheat(&cheat_mypos, ev->data2))
+      /*else if (cht_CheckCheat(&cheat_mypos, ev->data2))
       {
         static char buf[ST_MSGWIDTH];
         M_snprintf(buf, sizeof(buf), "ang=0x%x;x,y=(0x%x,0x%x)",
@@ -596,7 +596,7 @@ ST_Responder (event_t* ev)
                    players[consoleplayer].mo->x,
                    players[consoleplayer].mo->y);
         plyr->message = buf;
-      }
+      }*/
     }
     
     // 'clev' change-level cheat
@@ -1001,7 +1001,7 @@ void ST_doPaletteStuff(void)
 void ST_drawWidgets(boolean refresh)
 {
     int		i;
-
+/*
     // used by w_arms[] widgets
     st_armson = st_statusbaron && !deathmatch;
 
@@ -1029,7 +1029,7 @@ void ST_drawWidgets(boolean refresh)
     for (i=0;i<3;i++)
 	STlib_updateMultIcon(&w_keyboxes[i], refresh);
 
-    STlib_updateNum(&w_frags, refresh);
+    STlib_updateNum(&w_frags, refresh);*/
 
 }
 

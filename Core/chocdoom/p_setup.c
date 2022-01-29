@@ -691,16 +691,14 @@ static void PadRejectArray(byte *array, unsigned int len)
 
     if (len > sizeof(rejectpad))
     {
-        fprintf(stderr, "PadRejectArray: REJECT lump too short to pad! (%i > %i)\n",
-                        len, (int) sizeof(rejectpad));
 
         // Pad remaining space with 0 (or 0xff, if specified on command line).
 
-        if (M_CheckParm("-reject_pad_with_ff"))
+      /* if (M_CheckParm("-reject_pad_with_ff"))
         {
             padvalue = 0xff;
         }
-        else
+        else*/
         {
             padvalue = 0xf00;
         }
@@ -809,18 +807,7 @@ P_SetupLevel
     bodyqueslot = 0;
     deathmatch_p = deathmatchstarts;
     P_LoadThings (lumpnum+ML_THINGS);
-    
-    // if deathmatch, randomly spawn the active players
-    if (deathmatch)
-    {
-	for (i=0 ; i<MAXPLAYERS ; i++)
-	    if (playeringame[i])
-	    {
-		players[i].mo = NULL;
-		G_DeathMatchSpawnPlayer (i);
-	    }
-			
-    }
+   
 
     // clear special respawning que
     iquehead = iquetail = 0;		

@@ -9,10 +9,10 @@
 #define B_Down (1 << 3)
 #define B_A (1 << 4)
 #define B_B (1 << 5)
-#define B_TIME (1 << 6)
-#define B_GAME (1 << 7)
-#define B_PAUSE (1 << 8)
+#define B_C (1 << 6)
+#define B_D (1 << 7)
+#define B_START (1 << 8)
 
-uint32_t buttons_get();
+short buttons_get();
 
 #endif

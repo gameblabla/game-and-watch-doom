@@ -74,8 +74,8 @@ int			showMessages = 1;
 	
 
 // Blocky mode, has default, 0 = high, 1 = normal
-int			detailLevel = 0;
-int			screenblocks = 10;
+int			detailLevel = 1;
+int			screenblocks = 11;
 
 // temp for screenblocks (0-9)
 int			screenSize;
@@ -970,7 +970,7 @@ void M_ChooseSkill(int choice)
 
 void M_Episode(int choice)
 {
-    if ( (gamemode == shareware)
+    /*if ( (gamemode == shareware)
 	 && choice)
     {
 	M_StartMessage(DEH_String(SWSTRING),NULL,false);
@@ -986,8 +986,8 @@ void M_Episode(int choice)
 	       "M_Episode: 4th episode requires UltimateDOOM\n");
       choice = 0;
     }
-	 
-    epi = choice;
+	 */
+    epi = 0;
     M_SetupNextMenu(&NewDef);
 }
 
@@ -1322,7 +1322,7 @@ void M_StopMessage(void)
     messageToPrint = 0;
 }
 
-
+extern int mytoupper(int c);
 
 //
 // Find string width from hu_font chars
@@ -1335,7 +1335,7 @@ int M_StringWidth(char* string)
 	
     for (i = 0;i < strlen(string);i++)
     {
-	c = toupper((int)string[i]) - HU_FONTSTART;
+	c = mytoupper((int)string[i]) - HU_FONTSTART;
 	if (c < 0 || c >= HU_FONTSIZE)
 	    w += 4;
 	else
@@ -1397,7 +1397,7 @@ M_WriteText
 	    continue;
 	}
 		
-	c = toupper(c) - HU_FONTSTART;
+	c = mytoupper(c) - HU_FONTSTART;
 	if (c < 0 || c>= HU_FONTSIZE)
 	{
 	    cx += 4;
@@ -1619,7 +1619,7 @@ boolean M_Responder (event_t* ev)
                 ch = key;
             }
 
-            ch = toupper(ch);
+            ch = mytoupper(ch);
 
             if (ch != ' '
              && (ch - HU_FONTSTART < 0 || ch - HU_FONTSTART >= HU_FONTSIZE))
@@ -1759,15 +1759,6 @@ boolean M_Responder (event_t* ev)
 	    M_QuitDOOM(0);
 	    return true;
         }
-        else if (key == key_menu_gamma)    // gamma toggle
-        {
-	    usegamma++;
-	    if (usegamma > 4)
-		usegamma = 0;
-	    players[consoleplayer].message = DEH_String(gammamsg[usegamma]);
-            I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
-	    return true;
-	}
     }
 
     // Pop-up menu?

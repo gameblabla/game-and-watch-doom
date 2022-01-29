@@ -1,0 +1,6 @@
+*.source
+*.map
+*.o
+*.bin
+*.cue
+*.elf

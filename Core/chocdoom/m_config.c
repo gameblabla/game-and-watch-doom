@@ -561,15 +561,7 @@ static default_t	doom_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(snd_mport),
-
-    //!
-    // Gamma correction level.  A value of zero disables gamma
-    // correction, while a value in the range 1-4 gives increasing
-    // levels of gamma correction.
-    //
-
-    CONFIG_VARIABLE_INT(usegamma),
-
+    
     //!
     // @game hexen
     //
@@ -1892,7 +1884,7 @@ void M_LoadDefaults (void)
     // default.
     //
 
-    i = M_CheckParmWithArgs("-config", 1);
+   /* i = M_CheckParmWithArgs("-config", 1);
 
     if (i)
     {
@@ -1903,9 +1895,9 @@ void M_LoadDefaults (void)
     {
         doom_defaults.filename
             = "NODIR/doom.cfg";
-    }
+    }*/
 
-    printf("saving config in %s\n", doom_defaults.filename);
+   // printf("saving config in %s\n", doom_defaults.filename);
 
     //!
     // @arg <file>
@@ -1914,7 +1906,7 @@ void M_LoadDefaults (void)
     // the default.
     //
 
-    i = M_CheckParmWithArgs("-extraconfig", 1);
+   /* i = M_CheckParmWithArgs("-extraconfig", 1);
 
     if (i)
     {
@@ -1928,7 +1920,7 @@ void M_LoadDefaults (void)
             = "NODIR/doom_extras.cfg";
         // extra_defaults.filename
         //     = M_StringJoin(configdir, default_extra_config, NULL);
-    }
+    }*/
 
     LoadDefaultCollection(&doom_defaults);
     LoadDefaultCollection(&extra_defaults);
@@ -1971,25 +1963,6 @@ void M_BindVariable(char *name, void *location)
 
     variable->location = location;
     variable->bound = true;
-}
-
-// Set the value of a particular variable; an API function for other
-// parts of the program to assign values to config variables by name.
-
-boolean M_SetVariable(char *name, char *value)
-{
-    default_t *variable;
-
-    variable = GetDefaultForName(name);
-
-    if (variable == NULL || !variable->bound)
-    {
-        return false;
-    }
-
-    SetVariable(variable, value);
-
-    return true;
 }
 
 // Get the value of a variable.
@@ -2084,19 +2057,7 @@ void M_SetConfigDir(char *dir)
 {
     // Use the directory that was passed, or find the default.
 
-    if (dir != NULL)
-    {
-        configdir = dir;
-    }
-    else
-    {
-        configdir = GetDefaultConfigDir();
-    }
-
-    if (strcmp(configdir, "") != 0)
-    {
-        printf("Using %s for configuration and saves\n", configdir);
-    }
+    configdir = "";
 
     // Make the directory if it doesn't already exist:
 

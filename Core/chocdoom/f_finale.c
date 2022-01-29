@@ -67,10 +67,10 @@ typedef struct
 
 static textscreen_t textscreens[] =
 {
-    { doom,      1, 8,  "FLOOR4_8",  E1TEXT},
+   /* { doom,      1, 8,  "FLOOR4_8",  E1TEXT},
     { doom,      2, 8,  "SFLR6_1",   E2TEXT},
     { doom,      3, 8,  "MFLR8_4",   E3TEXT},
-    { doom,      4, 8,  "MFLR8_3",   E4TEXT},
+    { doom,      4, 8,  "MFLR8_3",   E4TEXT},*/
 
     { doom2,     1, 6,  "SLIME16",   C1TEXT},
     { doom2,     1, 11, "RROCK14",   C2TEXT},
@@ -79,7 +79,7 @@ static textscreen_t textscreens[] =
     { doom2,     1, 15, "RROCK13",   C5TEXT},
     { doom2,     1, 31, "RROCK19",   C6TEXT},
 
-    { pack_tnt,  1, 6,  "SLIME16",   T1TEXT},
+   /* { pack_tnt,  1, 6,  "SLIME16",   T1TEXT},
     { pack_tnt,  1, 11, "RROCK14",   T2TEXT},
     { pack_tnt,  1, 20, "RROCK07",   T3TEXT},
     { pack_tnt,  1, 30, "RROCK17",   T4TEXT},
@@ -91,7 +91,7 @@ static textscreen_t textscreens[] =
     { pack_plut, 1, 20, "RROCK07",   P3TEXT},
     { pack_plut, 1, 30, "RROCK17",   P4TEXT},
     { pack_plut, 1, 15, "RROCK13",   P5TEXT},
-    { pack_plut, 1, 31, "RROCK19",   P6TEXT},
+    { pack_plut, 1, 31, "RROCK19",   P6TEXT},*/
 };
 
 char*	finaletext;
@@ -223,6 +223,12 @@ void F_Ticker (void)
 #include "hu_stuff.h"
 extern	patch_t *hu_font[HU_FONTSIZE];
 
+int mytoupper(int c) {
+    if (c >= 'a' && c <= 'z') {
+        return c - ('a' - 'A');
+    }
+    return c;
+}
 
 void F_TextWrite (void)
 {
@@ -276,7 +282,7 @@ void F_TextWrite (void)
 	    continue;
 	}
 		
-	c = toupper(c) - HU_FONTSTART;
+	c = mytoupper(c) - HU_FONTSTART;
 	if (c < 0 || c> HU_FONTSIZE)
 	{
 	    cx += 4;
@@ -500,7 +506,7 @@ void F_CastPrint (char* text)
 	c = *ch++;
 	if (!c)
 	    break;
-	c = toupper(c) - HU_FONTSTART;
+	c = mytoupper(c) - HU_FONTSTART;
 	if (c < 0 || c> HU_FONTSIZE)
 	{
 	    width += 4;
@@ -519,7 +525,7 @@ void F_CastPrint (char* text)
 	c = *ch++;
 	if (!c)
 	    break;
-	c = toupper(c) - HU_FONTSTART;
+	c = mytoupper(c) - HU_FONTSTART;
 	if (c < 0 || c> HU_FONTSIZE)
 	{
 	    cx += 4;

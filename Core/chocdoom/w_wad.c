@@ -67,6 +67,8 @@ static lumpinfo_t **lumphash;
 
 // Hash function used for lump names.
 
+extern int mytoupper(int c);
+
 unsigned int W_LumpNameHash(const char *s)
 {
     // This is the djb2 string hash function, modded to work on strings
@@ -77,7 +79,7 @@ unsigned int W_LumpNameHash(const char *s)
 
     for (i=0; i < 8 && s[i] != '\0'; ++i)
     {
-        result = ((result << 5) ^ result ) ^ toupper((int)s[i]);
+        result = ((result << 5) ^ result ) ^ mytoupper((int)s[i]);
     }
 
     return result;
@@ -154,7 +156,7 @@ wad_file_t *W_AddFile (char *filename)
 
     if (wad_file == NULL)
     {
-		printf (" couldn't open %s\n", filename);
+		//printf (" couldn't open %s\n", filename);
 		return NULL;
     }
 
