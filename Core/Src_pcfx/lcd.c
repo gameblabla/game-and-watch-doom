@@ -90,6 +90,11 @@ static char* myitoa(int value) {
     return ptr;
 }
 
+void DEBUGTXT(char* toprint)
+{
+	print_at(0, 1, 12, "                  ");	
+	print_at(0, 1, 12, toprint);	
+}
 
 void lcd_init()
 {
@@ -141,10 +146,9 @@ void lcd_init()
 	Set_Video(KING_BGMODE_256_PAL);
 	initTimer(0, 1423);
 	Upload_Palette(pornpal);
+
 	
-	cd_pausectrl(0);
-	
-	//print_at(0, 1, 12, "EXAMPLE");
+	print_at(0, 1, 12, "EXAMPLE");
 }
 
 

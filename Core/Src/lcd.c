@@ -20,6 +20,10 @@ int  HAL_GetTick (void)
 	return SDL_GetTicks();
 }
 
+void DEBUGTXT(char* toprint)
+{
+	printf("%s\n", toprint);
+}
 
 void lcd_init()
 {

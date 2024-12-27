@@ -33,6 +33,8 @@ extern "C" {
 #endif
 
 
+extern void DEBUGTXT(char* toprint);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 

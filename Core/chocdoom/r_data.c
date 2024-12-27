@@ -703,11 +703,8 @@ void R_InitColormaps (void)
 void R_InitData (void)
 {
     R_InitTextures ();
-    printf (".");
     R_InitFlats ();
-    printf (".");
     R_InitSpriteLumps ();
-    printf (".");
     R_InitColormaps ();
 }
 

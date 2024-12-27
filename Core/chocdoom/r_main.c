@@ -766,22 +766,31 @@ void R_ExecuteSetViewSize (void)
 
 void R_Init (void)
 {
+	
+	DEBUGTXT("R_InitData");
     R_InitData ();
-    printf (".");
+
+	DEBUGTXT("R_InitPointToAngle");
     R_InitPointToAngle ();
-    printf (".");
+
+	DEBUGTXT("R_InitTables");
     R_InitTables ();
     // viewwidth / viewheight / detailLevel are set by the defaults
-    printf (".");
 
+
+	DEBUGTXT("R_SetViewSize");
     R_SetViewSize (screenblocks, detailLevel);
+    
+    DEBUGTXT("R_InitPlanes");
     R_InitPlanes ();
-    printf (".");
+
     R_InitLightTables ();
-    printf (".");
+ 
+	DEBUGTXT("R_InitSkyMap");
     R_InitSkyMap ();
     R_InitTranslationTables ();
-    printf (".");
+
+	DEBUGTXT("R_InitTranslationTables");
 	
     framecount = 0;
 }

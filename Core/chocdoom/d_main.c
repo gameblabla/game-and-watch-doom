@@ -634,38 +634,6 @@ static char *GetGameName(char *gamename)
     return "";
 }
 
-static void SetMissionForPackName(char *pack_name)
-{
-    int i;
-    static const struct
-    {
-        char *name;
-        int mission;
-    } packs[] = {
-        { "doom2",    doom2 },
-        { "tnt",      pack_tnt },
-        { "plutonia", pack_plut },
-    };
-
-    for (i = 0; i < arrlen(packs); ++i)
-    {
-        if (!strcasecmp(pack_name, packs[i].name))
-        {
-            gamemission = packs[i].mission;
-            return;
-        }
-    }
-
-    printf("Valid mission packs are:\n");
-
-    for (i = 0; i < arrlen(packs); ++i)
-    {
-        printf("\t%s\n", packs[i].name);
-    }
-
-    I_Error("Unknown mission pack name: %s", pack_name);
-}
-
 //
 // Find out what version of Doom is playing.
 //
@@ -799,9 +767,6 @@ void D_SetGameDescription(void)
     }
 }
 
-//      print title for every printed line
-char            title[128];
-
 static boolean D_AddFile(char *filename)
 {
     wad_file_t *handle;
@@ -811,176 +776,13 @@ static boolean D_AddFile(char *filename)
     return handle != NULL;
 }
 
-// Copyright message banners
-// Some dehacked mods replace these.  These are only displayed if they are 
-// replaced by dehacked.
-
-static char *copyright_banners[] =
-{
-    "===========================================================================\n"
-    "ATTENTION:  This version of DOOM has been modified.  If you would like to\n"
-    "get a copy of the original game, call 1-800-IDGAMES or see the readme file.\n"
-    "        You will not receive technical support for modified games.\n"
-    "                      press enter to continue\n"
-    "===========================================================================\n",
-
-    "===========================================================================\n"
-    "                 Commercial product - do not distribute!\n"
-    "         Please report software piracy to the SPA: 1-800-388-PIR8\n"
-    "===========================================================================\n",
-
-    "===========================================================================\n"
-    "                                Shareware!\n"
-    "===========================================================================\n"
-};
-
-// Prints a message only if it has been modified by dehacked.
-
-void PrintDehackedBanners(void)
-{
-    size_t i;
-
-    for (i=0; i<arrlen(copyright_banners); ++i)
-    {
-        char *deh_s;
-
-        deh_s = DEH_String(copyright_banners[i]);
-
-        if (deh_s != copyright_banners[i])
-        {
-            printf("%s", deh_s);
-
-            // Make sure the modified banner always ends in a newline character.
-            // If it doesn't, add a newline.  This fixes av.wad.
-
-            if (deh_s[strlen(deh_s) - 1] != '\n')
-            {
-                printf("\n");
-            }
-        }
-    }
-}
-
-static struct 
-{
-    char *description;
-    char *cmdline;
-    GameVersion_t version;
-} gameversions[] = {
-    {"Doom 1.666",           "1.666",      exe_doom_1_666},
-    {"Doom 1.7/1.7a",        "1.7",        exe_doom_1_7},
-    {"Doom 1.8",             "1.8",        exe_doom_1_8},
-    {"Doom 1.9",             "1.9",        exe_doom_1_9},
-    {"Hacx",                 "hacx",       exe_hacx},
-    {"Ultimate Doom",        "ultimate",   exe_ultimate},
-    {"Final Doom",           "final",      exe_final},
-    {"Final Doom (alt)",     "final2",     exe_final2},
-    {"Chex Quest",           "chex",       exe_chex},
-    { NULL,                  NULL,         0},
-};
 
 // Initialize the game version
 
 static void InitGameVersion(void)
 {
-    int p;
-    int i;
-
-    //! 
-    // @arg <version>
-    // @category compat
-    //
-    // Emulate a specific version of Doom.  Valid values are "1.9",
-    // "ultimate", "final", "final2", "hacx" and "chex".
-    //
-
-    p = M_CheckParmWithArgs("-gameversion", 1);
-
-    if (p)
-    {
-        for (i=0; gameversions[i].description != NULL; ++i)
-        {
-            if (!strcmp(myargv[p+1], gameversions[i].cmdline))
-            {
-                gameversion = gameversions[i].version;
-                break;
-            }
-        }
-        
-        if (gameversions[i].description == NULL) 
-        {
-            printf("Supported game versions:\n");
-
-            for (i=0; gameversions[i].description != NULL; ++i)
-            {
-                printf("\t%s (%s)\n", gameversions[i].cmdline,
-                        gameversions[i].description);
-            }
-            
-            I_Error("Unknown game version '%s'", myargv[p+1]);
-        }
-    }
-    else
-    {
-        // Determine automatically
-
-        if (gamemission == pack_chex)
-        {
-            // chex.exe - identified by iwad filename
-
-            gameversion = exe_chex;
-        }
-        else if (gamemission == pack_hacx)
-        {
-            // hacx.exe: identified by iwad filename
-
-            gameversion = exe_hacx;
-        }
-        else if (gamemode == shareware || gamemode == registered)
-        {
-            // original
-
-            gameversion = exe_doom_1_9;
-
-            // TODO: Detect IWADs earlier than Doom v1.9.
-        }
-        else if (gamemode == retail)
-        {
-            gameversion = exe_ultimate;
-        }
-        else if (gamemode == commercial)
-        {
-            if (gamemission == doom2)
-            {
-                gameversion = exe_doom_1_9;
-            }
-            else
-            {
-                // Final Doom: tnt or plutonia
-                // Defaults to emulating the first Final Doom executable,
-                // which has the crash in the demo loop; however, having
-                // this as the default should mean that it plays back
-                // most demos correctly.
-
-                gameversion = exe_final;
-            }
-        }
-    }
-    
-    // The original exe does not support retail - 4th episode not supported
-
-    if (gameversion < exe_ultimate && gamemode == retail)
-    {
-        gamemode = registered;
-    }
-
-    // EXEs prior to the Final Doom exes do not support Final Doom.
-
-    if (gameversion < exe_final && gamemode == commercial
-     && (gamemission == pack_tnt || gamemission == pack_plut))
-    {
-        gamemission = doom2;
-    }
+    gamemode = 2;
+    gamemission = 1;
 }
 
 void PrintGameVersion(void)
@@ -1009,7 +811,7 @@ static void D_Endoom(void)
     // game has actually started.
 
     if (!show_endoom || !main_loop_started
-     || screensaver_mode || M_CheckParm("-testcontrols") > 0)
+     || screensaver_mode > 0)
     {
         return;
     }
@@ -1037,70 +839,14 @@ void D_DoomMain (void)
     // print banner
 
     //I_PrintBanner(PACKAGE_STRING);
+    
+    DEBUGTXT("ZINIT");
 
     DEH_printf("Z_Init: Init zone memory allocation daemon. \n");
     Z_Init ();
 
     memcpy(states, state_init, sizeof(state_init));
 
-#ifdef FEATURE_MULTIPLAYER
-    //!
-    // @category net
-    //
-    // Start a dedicated server, routing packets but not participating
-    // in the game itself.
-    //
-
-    if (M_CheckParm("-dedicated") > 0)
-    {
-        printf("Dedicated server mode.\n");
-        NET_DedicatedServer();
-
-        // Never returns
-    }
-
-    //!
-    // @category net
-    //
-    // Query the Internet master server for a global list of active
-    // servers.
-    //
-
-    if (M_CheckParm("-search"))
-    {
-        NET_MasterQuery();
-        exit(0);
-    }
-
-    //!
-    // @arg <address>
-    // @category net
-    //
-    // Query the status of the server running on the given IP
-    // address.
-    //
-
-    p = M_CheckParmWithArgs("-query", 1);
-
-    if (p)
-    {
-        NET_QueryAddress(myargv[p+1]);
-        exit(0);
-    }
-
-    //!
-    // @category net
-    //
-    // Search the local LAN for running servers.
-    //
-
-    if (M_CheckParm("-localsearch"))
-    {
-        NET_LANQuery();
-        exit(0);
-    }
-
-#endif
 
     //!
     // @vanilla
@@ -1135,6 +881,7 @@ void D_DoomMain (void)
 
     devparm = 0;
 
+	DEBUGTXT("I_DisplayFPSDots");
     I_DisplayFPSDots(devparm);
 
 
@@ -1164,6 +911,8 @@ void D_DoomMain (void)
     M_SetConfigFilenames("default.cfg", PROGRAM_PREFIX "doom.cfg");
     D_BindVariables();
     M_LoadDefaults();
+    
+    DEBUGTXT("M_LoadDefaults");
 
     // Save configuration at exit.
     // I_AtExit(M_SaveDefaults, false);
@@ -1185,33 +934,11 @@ void D_DoomMain (void)
     D_IdentifyVersion();
     InitGameVersion();
 
-#if ORIGCODE
-    //!
-    // @category mod
-    //
-    // Disable automatic loading of Dehacked patches for certain
-    // IWAD files.
-    //
-    if (!M_ParmExists("-nodeh"))
-    {
-        // Some IWADs have dehacked patches that need to be loaded for
-        // them to be played properly.
-        LoadIwadDeh();
-    }
-#endif
 
-#ifdef FEATURE_DEHACKED
-    // Load Dehacked patches specified on the command line with -deh.
-    // Note that there's a very careful and deliberate ordering to how
-    // Dehacked patches are loaded. The order we use is:
-    //  1. IWAD dehacked patches.
-    //  2. Command line dehacked patches specified with -deh.
-    //  3. PWAD dehacked patches in DEHACKED lumps.
-    DEH_ParseCommandLine();
-#endif
+	DEBUGTXT("modifiedgame");
 
     // Load PWAD files.
-    modifiedgame = W_ParseCommandLine();
+    modifiedgame = 0;
 
     // Debug:
 //    W_PrintDirectory();
@@ -1225,29 +952,6 @@ void D_DoomMain (void)
     // Load DEHACKED lumps from WAD files - but only if we give the right
     // command line parameter.
 
-#if ORIGCODE
-    //!
-    // @category mod
-    //
-    // Load Dehacked patches from DEHACKED lumps contained in one of the
-    // loaded PWAD files.
-    //
-    if (M_ParmExists("-dehlump"))
-    {
-        int i, loaded = 0;
-
-        for (i = numiwadlumps; i < numlumps; ++i)
-        {
-            if (!strncmp(lumpinfo[i].name, "DEHACKED", 8))
-            {
-                DEH_LoadLump(i, false, false);
-                loaded++;
-            }
-        }
-
-        printf("  loaded %i DEHACKED lumps from PWAD files.\n", loaded);
-    }
-#endif
 
     // Set the gamedescription string. This is only possible now that
     // we've finished loading Dehacked patches.
@@ -1258,11 +962,14 @@ void D_DoomMain (void)
     }
 
 
+
     I_CheckIsScreensaver();
     I_InitTimer();
     I_InitJoystick();
     I_InitSound(true);
     I_InitMusic();
+    
+    DEBUGTXT("I_InitMusic");
 
 
     // get skill / episode / map from parms
@@ -1283,37 +990,34 @@ void D_DoomMain (void)
     // Load the game in slot s.
     //
 
-    p = M_CheckParmWithArgs("-loadgame", 1);
+	startloadgame = -1;
     
-    if (p)
-    {
-        startloadgame = atoi(myargv[p+1]);
-    }
-    else
-    {
-        // Not loading a game
-        startloadgame = -1;
-    }
+    DEBUGTXT("M_Init");
 
     M_Init ();
+    
+    DEBUGTXT("R_Init");
 
     R_Init ();
+    
+    DEBUGTXT("P_Init");
 
     P_Init ();
 
-    DEH_printf("S_Init: Setting up sound.\n");
     S_Init (sfxVolume * 8, musicVolume * 8);
+
+	DEBUGTXT("D_CheckNetGame");
 
     DEH_printf("D_CheckNetGame: Checking network game status.\n");
     D_CheckNetGame ();
-
-    PrintGameVersion();
 
     DEH_printf("HU_Init: Setting up heads up display.\n");
     HU_Init ();
 
     DEH_printf("ST_Init: Init status bar.\n");
     ST_Init ();
+    
+    DEBUGTXT("ST_Init");
 
 
 /*
@@ -1338,8 +1042,13 @@ void D_DoomMain (void)
 		if (autostart || netgame)
 			G_InitNew (startskill, startepisode, startmap);
 		else
+		{
+			DEBUGTXT("D_StartTitle");
 			D_StartTitle ();                // start up intro loop
+		}
     }
+
+
 
     D_DoomLoop ();  // never returns
 }
