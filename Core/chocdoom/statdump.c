@@ -332,12 +332,7 @@ static void PrintStats(FILE *stream, wbstartstruct_t *stats)
 
 void StatCopy(wbstartstruct_t *stats)
 {
-    if (M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES)
-    {
-        memcpy(&captured_stats[num_captured_stats], stats,
-               sizeof(wbstartstruct_t));
-        ++num_captured_stats;
-    }
+
 }
 
 void StatDump(void)

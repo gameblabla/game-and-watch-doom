@@ -92,7 +92,7 @@ char *          savegamedir;
 
 // location of IWAD and WAD files
 
-char *          iwadfile;
+char          iwadfile[128];
 
 
 boolean		devparm;	// started game with -devparm
@@ -918,20 +918,30 @@ void D_DoomMain (void)
     // I_AtExit(M_SaveDefaults, false);
 
     // Find main IWAD file and load it.
-    iwadfile = D_FindIWAD(IWAD_MASK_DOOM, &gamemission);
+    //iwadfile = D_FindIWAD(IWAD_MASK_DOOM, &gamemission);
+    //printf("iwadfile %s\n", iwadfile);
+    sprintf(iwadfile, "%s", "0:/doom/doom2.wad");
 
     modifiedgame = false;
+    
+    DEBUGTXT("D_AddFile");
 
     D_AddFile(iwadfile);
 #if ORIGCODE
     numiwadlumps = numlumps;
 #endif
 
+
+	DEBUGTXT("W_CheckCorrectIWAD");
+	while(1){}
     W_CheckCorrectIWAD(doom);
 
     // Now that we've loaded the IWAD, we can figure out what gamemission
     // we're playing and which version of Vanilla Doom we need to emulate.
+    DEBUGTXT("D_IdentifyVersion");
     D_IdentifyVersion();
+    
+    DEBUGTXT("InitGameVersion");
     InitGameVersion();
 
 

@@ -36,6 +36,8 @@
 
 #include "w_wad.h"
 
+extern char mytext[64];
+
 typedef struct
 {
     // Should be "IWAD" or "PWAD".
@@ -122,6 +124,8 @@ static void ExtendLumpInfo(int newnumlumps)
     // All done.
     free(lumpinfo);
     lumpinfo = newlumpinfo;
+    
+    //printf("newnumlumps %d\n", newnumlumps);
     numlumps = newnumlumps;
 }
 
@@ -161,7 +165,7 @@ wad_file_t *W_AddFile (char *filename)
     }
 
     newnumlumps = numlumps;
-
+    
     if (strcasecmp(filename+strlen(filename)-3 , "wad" ) )
     {
     	// single lump file
@@ -174,6 +178,10 @@ wad_file_t *W_AddFile (char *filename)
 		fileinfo = Z_Malloc(sizeof(filelump_t), PU_STATIC, 0);
 		fileinfo->filepos = LONG(0);
 		fileinfo->size = LONG(wad_file->length);
+		
+		/*sprintf(mytext, "filename %s", filename);
+		DEBUGTXT(mytext);
+		while(1){}*/
 
         // Name the lump after the base of the filename (without the
         // extension).
@@ -202,6 +210,10 @@ wad_file_t *W_AddFile (char *filename)
 		header.infotableofs = LONG(header.infotableofs);
 		length = header.numlumps*sizeof(filelump_t);
 		fileinfo = Z_Malloc(length, PU_STATIC, 0);
+		
+		/*sprintf(mytext, "LE filename %s", filename);
+		DEBUGTXT(mytext);
+		while(1){}*/
 
         W_Read(wad_file, header.infotableofs, fileinfo, length);
         newnumlumps += header.numlumps;
@@ -381,10 +393,15 @@ void W_ReadLump(unsigned int lump, void *dest)
 // when no longer needed (do not use Z_ChangeTag).
 //
 
+extern void DEBUGTXT(char* txt);
+
 void *W_CacheLumpNum(int lumpnum, int tag)
 {
     byte *result;
     lumpinfo_t *lump;
+    
+   /* sprintf(mytext, "numlumps %d", numlumps);
+    DEBUGTXT(mytext);*/
 
     if ((unsigned)lumpnum >= numlumps)
     {

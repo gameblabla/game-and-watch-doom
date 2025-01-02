@@ -25,6 +25,10 @@
 
 #include "w_file.h"
 
+extern char mytext[64];
+extern void DEBUGTXT(char* txt);
+
+
 extern wad_file_class_t stdc_wad_file;
 
 #ifdef _WIN32
@@ -51,16 +55,6 @@ wad_file_t *W_OpenFile(char *path)
     wad_file_t *result;
     int i;
 
-    //!
-    // Use the OS's virtual memory subsystem to map WAD files
-    // directly into memory.
-    //
-
-    if (!M_CheckParm("-mmap"))
-    {
-        return stdc_wad_file.OpenFile(path);
-    }
-
     // Try all classes in order until we find one that works
 
     result = NULL;
@@ -74,6 +68,7 @@ wad_file_t *W_OpenFile(char *path)
             break;
         }
     }
+    
 
     return result;
 }

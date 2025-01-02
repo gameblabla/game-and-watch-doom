@@ -1184,7 +1184,7 @@ static void DonutOverrun(fixed_t *s3_floorheight, short *s3_floorpic,
 
     extern int numflats;
 
-    if (first)
+   /* if (first)
     {
         int p;
 
@@ -1228,15 +1228,10 @@ static void DonutOverrun(fixed_t *s3_floorheight, short *s3_floorpic,
 
             if (tmp_s3_floorpic >= numflats)
             {
-                fprintf(stderr,
-                        "DonutOverrun: The second parameter for \"-donut\" "
-                        "switch should be greater than 0 and less than number "
-                        "of flats (%d). Using default value (%d) instead. \n",
-                        numflats, DONUT_FLOORPIC_DEFAULT);
                 tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
             }
         }
-    }
+    }*/
 
     /*
     fprintf(stderr,

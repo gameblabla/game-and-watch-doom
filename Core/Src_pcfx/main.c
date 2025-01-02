@@ -69,6 +69,8 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+extern char mytext[64];
+extern void DEBUGTXT(char *txt);
 
 /* Required stubs for it to compile (due to issues with libc on PCFX for whatever reason) */
 
@@ -79,34 +81,65 @@ int kill(int pid, int sig) {
 
 // Stub for `getpid`
 int getpid(void) {
+		sprintf(mytext, "getpid");
+		DEBUGTXT(mytext);
+		while(1);
+	
     // Return a dummy process ID
     return 1;
 }
 
 // Stub for `write`
 int write(int fd, const void *buf, int count) {
+	
+		sprintf(mytext, "WRITE %s", buf);
+		DEBUGTXT(mytext);
+		while(1);
+	
     // Simulate successful write (no actual output)
     return 0;
 }
 
 // Stub for `close`
 int close(int fd) {
+	
+		sprintf(mytext, "close");
+		DEBUGTXT(mytext);
+		while(1);
+	
     // Simulate successful close
     return 0;
 }
 
 // Stub for `lseek`
 int lseek(int fd, int offset, int whence) {
+	
+		sprintf(mytext, "lseek");
+		DEBUGTXT(mytext);
+		while(1);
+	
     return -1;
 }
 
 // Stub for `read`
 int read(int fd, void *buf, int count) {
+	
+	
+		sprintf(mytext, "read");
+		DEBUGTXT(mytext);
+		while(1);
+	
     // Simulate an end-of-file or error
     return 0;
 }
 
 // Stub for `fstat`
 int fstat(int fd, struct stat *st) {
+	
+	
+		sprintf(mytext, "fstat");
+		DEBUGTXT(mytext);
+		while(1);
+	
     return -1;
 }

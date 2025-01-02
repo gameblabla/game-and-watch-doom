@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 
+char mytext[64];
+
 #include "deh_main.h"
 #include "i_swap.h"
 #include "i_system.h"
@@ -482,11 +484,19 @@ void R_InitTextures (void)
     int			temp2;
     int			temp3;
 
+	DEBUGTXT("R_InitTextures");
     
     // Load the patch names from pnames.lmp.
     name[8] = 0;
     names = W_CacheLumpName (DEH_String("PNAMES"), PU_STATIC);
+    sprintf(mytext, "names %d", names[0]);
+    DEBUGTXT(mytext);
+    
     nummappatches = LONG ( *((int *)names) );
+    
+    //sprintf(mytext, "nummappatches %d", nummappatches);
+    //DEBUGTXT(mytext);
+    
     name_p = names + 4;
     patchlookup = Z_Malloc(nummappatches*sizeof(*patchlookup), PU_STATIC, NULL);
 

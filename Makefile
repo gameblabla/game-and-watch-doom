@@ -9,8 +9,8 @@ OBJ_C		= $(notdir $(patsubst %.c, %.o, $(SRC_C)))
 OBJ_S		= $(notdir $(patsubst %.s, %.o, $(SRC_CP)))
 OBJS		= $(OBJ_C) $(OBJ_S)
 
-CFLAGS		= -Os -flto  -D__USE_C_FIXED__
-CFLAGS		+= -Isrc -I/usr/include/SDL -ICore/Inc -ICore/chocdoom -ICore/Src -Wl,--as-needed -flto -s
+CFLAGS		= -O0 -g3  -D__USE_C_FIXED__
+CFLAGS		+= -Isrc -I/usr/include/SDL -ICore/Inc -ICore/chocdoom -ICore/Src
 
 LDFLAGS     = -lc -lgcc -lm -lSDL -lasound
 

@@ -1611,7 +1611,7 @@ static void SetVariable(default_t *def, char *value)
 
     // parameter found
 
-    switch (def->type)
+    /*switch (def->type)
     {
         case DEFAULT_STRING:
             * (char **) def->location = strdup(value);
@@ -1645,7 +1645,7 @@ static void SetVariable(default_t *def, char *value)
         case DEFAULT_FLOAT:
             * (float *) def->location = (float) atof(value);
             break;
-    }
+    }*/
 }
 
 static void LoadDefaultCollection(default_collection_t *collection)

@@ -240,8 +240,6 @@ typedef struct
     int consoleplayer;
     char player_names[NET_MAXPLAYERS][MAXPLAYERNAME];
     char player_addrs[NET_MAXPLAYERS][MAXPLAYERNAME];
-    sha1_digest_t wad_sha1sum;
-    sha1_digest_t deh_sha1sum;
     int is_freedoom;
 } net_waitdata_t;
 
